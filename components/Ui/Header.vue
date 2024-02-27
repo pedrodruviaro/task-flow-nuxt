@@ -3,7 +3,7 @@ import { BASE_TITLE } from "~/constants/siteInfos"
 </script>
 
 <template>
-  <header class="border-b-2 border-slate-200 py-4">
+  <header class="border-b-2 border-slate-200 py-4 bg-white">
     <UContainer class="flex items-center gap-3 flex-wrap justify-between">
       <NuxtLink to="/" class="flex items-center gap-2">
         <img src="/logo.svg" width="30" height="30" />

@@ -1,3 +1,3 @@
 <template>
-  <h2>home</h2>
+  <h2>categories</h2>
 </template>
