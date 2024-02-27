@@ -1,7 +1,7 @@
-export const status = [
+export const STATUS = [
   {
-    value: "active",
-    label: "Active",
+    value: "in_progress",
+    label: "In Progress",
   },
   {
     value: "on_hold",

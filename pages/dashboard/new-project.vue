@@ -4,6 +4,7 @@ import type { FormSubmitEvent } from "#ui/types"
 
 const categories = ["Website", "Android", "iOS"]
 
+// schema and form state
 const schema = z.object({
   title: z.string({ required_error: "Title is requred" }),
   description: z.string({ required_error: "Description is required" }),
@@ -25,9 +26,52 @@ const state = reactive({
   status: undefined,
 })
 
+// submit
+const supabase = useSupabaseClient()
+const user = useSupabaseUser()
+const toast = useToast()
+const isLoading = ref(false)
+
 async function handleSubmit(event: FormSubmitEvent<Schema>) {
-  // Do something with data
-  console.log(event.data)
+  try {
+    isLoading.value = true
+
+    const newProject = {
+      title: event.data.title,
+      description: event.data.description,
+      due_date: new Date(event.data.due_date).toISOString(),
+      status: event.data.status,
+      categories: event.data.categories,
+      created_by: user?.value?.id,
+    }
+
+    const { error } = await supabase.from("projects").insert(newProject)
+
+    if (error) {
+      throw new Error("Failed to create the project")
+    }
+
+    toast.add({
+      title: "Project created!",
+      color: "green",
+      icon: "i-heroicons-check",
+    })
+
+    state.title = undefined
+    state.description = undefined
+    state.due_date = undefined
+    state.categories = []
+    state.status = undefined
+  } catch (error) {
+    toast.add({
+      title: "Something went wrong...",
+      description: "Refresh the page and try again",
+      color: "red",
+      icon: "i-heroicons-x-circle",
+    })
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -72,6 +116,8 @@ async function handleSubmit(event: FormSubmitEvent<Schema>) {
       />
     </UFormGroup>
 
-    <UButton icon="i-heroicons-plus" type="submit">Create</UButton>
+    <UButton icon="i-heroicons-plus" type="submit" :loading="isLoading"
+      >Create</UButton
+    >
   </UForm>
 </template>

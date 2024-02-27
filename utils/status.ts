@@ -1,9 +1,5 @@
-import { status } from "@/constants/projects/status"
+import { STATUS } from "@/constants/projects/status"
 
 export function getStatusLabels(): string[] {
-  return status.map((s) => s.label)
-}
-
-export function getStatusValues(): string[] {
-  return status.map((s) => s.value)
+  return STATUS.map((s) => s.label)
 }

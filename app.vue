@@ -10,8 +10,9 @@ useHead({
 
 <template>
   <NuxtLayout>
-    <NuxtLoadingIndicator :height="4" />
+    <NuxtLoadingIndicator :height="4" color="#f97316" />
     <NuxtPage />
+    <UNotifications />
   </NuxtLayout>
 </template>
 
