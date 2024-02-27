@@ -5,35 +5,15 @@ const description =
 
 useSeoMeta({ title, description })
 
-const links = [
-  {
-    label: "Projects",
-    icon: "i-heroicons-window",
-    to: "/dashboard/projects",
-  },
-  {
-    label: "Categories",
-    icon: "i-heroicons-tag",
-    to: "/dashboard/categories",
-  },
-  {
-    label: "Table",
-    icon: "i-heroicons-home",
-    click: () => console.log("No routes yet"),
-  },
-]
+definePageMeta({
+  redirect: "/dashboard/projects",
+})
 </script>
 
 <template>
-  <div class="grid grid-cols-[max-content_1fr] gap-4 lg:gap-8">
+  <div class="grid md:grid-cols-[max-content_1fr] gap-4 lg:gap-12">
     <section>
-      <UVerticalNavigation :links="links">
-        <template #default="{ link }">
-          <span class="group-hover:text-primary relative">{{
-            link.label
-          }}</span>
-        </template>
-      </UVerticalNavigation>
+      <DashboardMenu />
     </section>
     <div>
       <NuxtPage />
