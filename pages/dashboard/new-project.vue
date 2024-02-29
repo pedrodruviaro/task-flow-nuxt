@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { z } from "zod"
 import type { FormSubmitEvent } from "#ui/types"
+import { getProjectsStatusLabels } from "@/utils/projects/status"
 
 const categories = ["Website", "Android", "iOS"]
 
@@ -110,7 +111,7 @@ async function handleSubmit(event: FormSubmitEvent<Schema>) {
 
     <UFormGroup required label="Status" name="status">
       <USelect
-        :options="getStatusLabels()"
+        :options="getProjectsStatusLabels()"
         v-model="state.status"
         placeholder="Project Status"
       />
