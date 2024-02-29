@@ -1,16 +1,12 @@
 <script setup lang="ts">
+const user = useSupabaseUser()
+
 const items = [
   [
     {
-      label: "ben@example.com",
+      label: user?.value?.email || "",
       slot: "account",
       disabled: true,
-    },
-  ],
-  [
-    {
-      label: "Settings",
-      icon: "i-heroicons-cog-8-tooth",
     },
   ],
   [
@@ -28,7 +24,10 @@ const items = [
     :ui="{ item: { disabled: 'cursor-text select-text' } }"
     :popper="{ placement: 'bottom-start' }"
   >
-    <UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4" />
+    <UAvatar
+      :src="user?.user_metadata.avatar_url"
+      referrerpolicy="no-referrer"
+    />
 
     <template #account="{ item }">
       <div class="text-left">
