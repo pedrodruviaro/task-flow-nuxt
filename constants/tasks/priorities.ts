@@ -1,11 +1,19 @@
-export const PRIORITIES = {
-  Low: {
+export type TaskPriorities = "low" | "mid" | "high"
+
+export const TASK_PRIORITIES: Record<
+  TaskPriorities,
+  { color: string; label: string }
+> = {
+  low: {
+    label: "Low",
     color: "green",
   },
-  Mid: {
+  mid: {
+    label: "Mid",
     color: "yellow",
   },
-  High: {
+  high: {
+    label: "High",
     color: "red",
   },
 }

@@ -1,18 +1,17 @@
-export const STATUS = {
-  Completed: {
-    value: "completed",
-    color: "#00ff00",
-  },
-  "On Review": {
-    value: "on_review",
-    color: "#ff02f2",
-  },
-  "In Queue": {
-    value: "in_queue",
-    color: "#ffff00",
-  },
-  "In Progress": {
-    value: "in_progress",
-    color: "#0000ff",
-  },
-}
+export type TaskStatus = "completed" | "on_review" | "in_progress"
+
+export const TASK_STATUS: Record<TaskStatus, { color: string; label: string }> =
+  {
+    completed: {
+      label: "Completed",
+      color: "#00ff00",
+    },
+    on_review: {
+      label: "On Review",
+      color: "#ff02f2",
+    },
+    in_progress: {
+      label: "In Progress",
+      color: "#0000ff",
+    },
+  }

@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { theme } from "#tailwind-config"
-import { STATUS } from "~/constants/tasks/status"
-import { PRIORITIES } from "~/constants/tasks/priorities"
+import { TASK_STATUS, type TaskStatus } from "~/constants/tasks/status"
+import {
+  TASK_PRIORITIES,
+  type TaskPriorities,
+} from "~/constants/tasks/priorities"
+import type { Database } from "@/supabase"
 
 const route = useRoute()
 const id = computed(() => Number(route.params.id))
 
-const supabase = useSupabaseClient()
+const supabase = useSupabaseClient<Database>()
 
-const { data: project, error } = await useAsyncData("project", async () => {
+const { data: project } = await useAsyncData("project", async () => {
   const { data, error } = await supabase
     .from("projects")
     .select()
@@ -26,37 +29,35 @@ const { data: project, error } = await useAsyncData("project", async () => {
   return data
 })
 
-const loadingTasks = ref(false)
-const tasks = ref([])
+const { data: tasks } = await useAsyncData("tasks", async () => {
+  const { data, error } = await supabase
+    .from("tasks")
+    .select()
+    .eq("project_id", id.value)
 
-onMounted(async () => {
-  try {
-    loadingTasks.value = true
-
-    const { data, error } = await supabase
-      .from("tasks")
-      .select()
-      .eq("project_id", id.value)
-
-    if (data && !error) {
-      tasks.value = data
-    }
-  } catch (error) {
-    console.error(error)
-  } finally {
-    loadingTasks.value = false
+  if (error) {
+    throw createError({
+      fatal: true,
+      statusCode: 500,
+      statusMessage: "Something went wrong, refresh and try again",
+    })
   }
+
+  return data
 })
 
 console.log(project.value)
+
+const isSlideOverOpen = ref(false)
 </script>
 
 <template>
   <div>
+    <!-- infos do projeto -->
     <section class="border border-red-400">
-      <h2>{{ project.title }}</h2>
-      <p>{{ project.description }}</p>
-      <p>Due Date: {{ project.due_date }}</p>
+      <h2>{{ project?.title }}</h2>
+      <p>{{ project?.description }}</p>
+      <p>Due Date: {{ project?.due_date }}</p>
       <UMeter
         :value="35"
         indicator
@@ -65,9 +66,16 @@ console.log(project.value)
       />
     </section>
 
+    <!-- 4 blocos com o resumo das tarefas (4 status) -->
+    <section></section>
+
+    <!-- bloco de criacao de tarefa -->
+    <section></section>
+
+    <!-- Listagem das tarefas -->
     <section class="border border-red-400 mt-10">
       <h2>Tasks</h2>
-      <ul v-if="tasks.length > 0 && !loadingTasks">
+      <ul v-if="tasks && tasks.length > 0">
         <li v-for="task in tasks" class="grid grid-cols-4 gap-2">
           <span>
             {{ task.title }}
@@ -78,15 +86,26 @@ console.log(project.value)
           <span class="flex items-center gap-2">
             <span
               class="block w-3 h-3 rounded-full"
-              :style="{ background: STATUS[task.status].color }"
+              :style="{ background: TASK_STATUS[task.status as TaskStatus].color }"
             ></span>
-            {{ task.status }}
+            {{ TASK_STATUS[task.status as TaskStatus].label }}
           </span>
-          <UBadge :color="PRIORITIES[task.priority].color">
-            {{ task.priority }}
+          <UBadge
+            :color="TASK_PRIORITIES[task.priority as TaskPriorities].color"
+          >
+            {{ TASK_PRIORITIES[task.priority as TaskPriorities].label }}
           </UBadge>
         </li>
       </ul>
     </section>
+
+    <!-- quando clicar, abrir a sidebar com as infos da tarefa -->
+    <div>
+      <UButton label="Open" @click="isSlideOverOpen = true" />
+
+      <USlideover v-model="isSlideOverOpen">
+        <div class="p-4 w-screen flex-1"></div>
+      </USlideover>
+    </div>
   </div>
 </template>
