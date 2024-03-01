@@ -6,13 +6,20 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
+const user = useSupabaseUser()
+const router = useRouter()
 
+if (user?.value?.id) {
+  router.push("/dashboard")
+}
+
+console.log(process.env.NODE_ENV)
 async function handleLogin() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
 
     options: {
-      redirectTo: "http://localhost:3000/confirm",
+      redirectTo: "",
       queryParams: {
         access_type: "offline",
         prompt: "consent",
@@ -28,6 +35,7 @@ async function logout() {
 
 <template>
   <section>
+    <button @click="logout">LOGOUT</button>
     <div class="flex flex-col justify-center text-center">
       <div class="flex items-center gap-4 mx-auto mb-6">
         <img src="/logo.svg" width="60" height="60" />
@@ -47,7 +55,6 @@ async function logout() {
         class="mx-auto flex mt-4"
         >Login</UButton
       >
-      <!-- <UButton @click="logout">Logout</UButton> -->
     </UCard>
   </section>
 </template>
