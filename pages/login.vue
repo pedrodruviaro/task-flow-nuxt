@@ -13,13 +13,17 @@ if (user?.value?.id) {
   router.push("/dashboard")
 }
 
-console.log(process.env.NODE_ENV)
+const REDIRECT_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://taskflow.pedroruviaro.com.br"
+
 async function handleLogin() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
 
     options: {
-      redirectTo: "",
+      redirectTo: REDIRECT_URL + "/confirm",
       queryParams: {
         access_type: "offline",
         prompt: "consent",
@@ -27,15 +31,10 @@ async function handleLogin() {
     },
   })
 }
-
-async function logout() {
-  const { error } = await supabase.auth.signOut()
-}
 </script>
 
 <template>
   <section>
-    <button @click="logout">LOGOUT</button>
     <div class="flex flex-col justify-center text-center">
       <div class="flex items-center gap-4 mx-auto mb-6">
         <img src="/logo.svg" width="60" height="60" />
