@@ -11,10 +11,10 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="grid md:grid-cols-[max-content_1fr] gap-4 lg:gap-12">
-    <section>
+  <div class="grid md:grid-cols-[max-content_1fr] items-start gap-4 lg:gap-12">
+    <UCard>
       <DashboardMenu />
-    </section>
+    </UCard>
     <div>
       <NuxtPage />
     </div>

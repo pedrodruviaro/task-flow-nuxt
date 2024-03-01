@@ -7,7 +7,7 @@ const currentYear = computed(() => {
 </script>
 
 <template>
-  <footer class="py-6">
+  <footer class="py-6 border-t border-slate-200">
     <UContainer class="grid place-items-center">
       <p class="text-sm">
         &copy; Copyright {{ BASE_TITLE }} -
