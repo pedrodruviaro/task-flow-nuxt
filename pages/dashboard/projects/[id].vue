@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { TASK_STATUS, type TaskStatus } from "~/constants/tasks/status"
-import {
-  TASK_PRIORITIES,
-  type TaskPriorities,
-} from "~/constants/tasks/priorities"
 import type { Database } from "@/supabase"
 
 const route = useRoute()
 const id = computed(() => Number(route.params.id))
+const isTaskModalOpen = ref(false)
 
 const supabase = useSupabaseClient<Database>()
 
@@ -46,23 +42,30 @@ const { data: tasks } = await useAsyncData("tasks", async () => {
   return data
 })
 
-console.log(project.value)
+const tasksCompletedPercentage = computed(() => {
+  const totalTasks = tasks.value?.length
+  const totalCompleteTasks = tasks.value?.filter(
+    (t) => t.status == "completed"
+  ).length
 
-const isSlideOverOpen = ref(false)
+  if (!totalCompleteTasks || !totalTasks) return 0
+
+  return Math.ceil((100 * totalCompleteTasks) / totalTasks)
+})
 </script>
 
 <template>
   <div>
     <!-- infos do projeto -->
-    <section class="border border-red-400">
-      <h2>{{ project?.title }}</h2>
-      <p>{{ project?.description }}</p>
-      <p>Due Date: {{ project?.due_date }}</p>
+    <section>
+      <h1 class="font-bold text-2xl">{{ project?.title }}</h1>
+      <p class="text-slate-600 my-4">{{ project?.description }}</p>
+      <UBadge variant="soft">Due Date: {{ project?.due_date }}</UBadge>
       <UMeter
-        :value="35"
+        :value="tasksCompletedPercentage"
         indicator
         icon="i-heroicons-chart-bar"
-        label="Completed"
+        label="Completed Tasks"
       />
     </section>
 
@@ -70,42 +73,25 @@ const isSlideOverOpen = ref(false)
     <section></section>
 
     <!-- bloco de criacao de tarefa -->
-    <section></section>
-
-    <!-- Listagem das tarefas -->
-    <section class="border border-red-400 mt-10">
-      <h2>Tasks</h2>
-      <ul v-if="tasks && tasks.length > 0">
-        <li v-for="task in tasks" class="grid grid-cols-4 gap-2">
-          <span>
-            {{ task.title }}
-          </span>
-          <span>
-            {{ task.description }}
-          </span>
-          <span class="flex items-center gap-2">
-            <span
-              class="block w-3 h-3 rounded-full"
-              :style="{ background: TASK_STATUS[task.status as TaskStatus].color }"
-            ></span>
-            {{ TASK_STATUS[task.status as TaskStatus].label }}
-          </span>
-          <UBadge
-            :color="TASK_PRIORITIES[task.priority as TaskPriorities].color"
-          >
-            {{ TASK_PRIORITIES[task.priority as TaskPriorities].label }}
-          </UBadge>
-        </li>
-      </ul>
+    <section class="flex justify-between items-center gap-3 flex-wrap mt-10">
+      <h2 class="font-bold text-2xl">Tasks</h2>
+      <UButton trailingIcon="i-heroicons-plus">Create</UButton>
     </section>
 
-    <!-- quando clicar, abrir a sidebar com as infos da tarefa -->
-    <div>
-      <UButton label="Open" @click="isSlideOverOpen = true" />
+    <!-- Listagem das tarefas -->
+    <section class="mt-4">
+      <div v-if="tasks && tasks.length > 0">
+        <div class="grid gap-4">
+          <TaskPreviewCard
+            v-for="task in tasks"
+            :task="task"
+            @openDetails="isTaskModalOpen = true"
+          />
+        </div>
+      </div>
+    </section>
 
-      <USlideover v-model="isSlideOverOpen">
-        <div class="p-4 w-screen flex-1"></div>
-      </USlideover>
-    </div>
+    <!-- Task Details -->
+    <TaskDetailsModal v-model="isTaskModalOpen" />
   </div>
 </template>
