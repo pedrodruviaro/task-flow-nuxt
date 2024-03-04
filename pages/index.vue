@@ -2,7 +2,7 @@
 import { BASE_DESCRIPTION, BASE_TITLE } from "~/constants/siteInfos"
 
 definePageMeta({
-  layout: "landing-page",
+  layout: "landing",
 })
 
 useSeoMeta({

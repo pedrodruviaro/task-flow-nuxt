@@ -13,10 +13,7 @@ if (user?.value?.id) {
   router.push("/dashboard")
 }
 
-const REDIRECT_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : "https://taskflow.pedroruviaro.com.br"
+const REDIRECT_URL = "http://localhost:3000/dashboard"
 
 async function handleLogin() {
   const { error } = await supabase.auth.signInWithOAuth({
