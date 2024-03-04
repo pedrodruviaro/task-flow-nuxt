@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Database } from "@/supabase"
+import type { Task } from "~/types"
 import { TASK_STATUS } from "~/constants/tasks/status"
 
 const route = useRoute()
@@ -8,44 +9,33 @@ const isTaskModalOpen = ref(false)
 
 const supabase = useSupabaseClient<Database>()
 
-const { data: project } = await useAsyncData("project", async () => {
-  const { data, error } = await supabase
-    .from("projects")
-    .select()
-    .eq("id", id.value)
-    .single()
+function getProject() {
+  return supabase.from("projects").select().eq("id", id.value).single()
+}
 
-  if (error) {
+function getTasks() {
+  return supabase.from("tasks").select().eq("project_id", id.value)
+}
+
+async function getData() {
+  try {
+    const [project, tasks] = await Promise.all([getProject(), getTasks()])
+
+    return { project, tasks }
+  } catch (error) {
     throw createError({
       fatal: true,
       statusCode: 500,
-      statusMessage: "Something went wrong, refresh and try again",
+      statusMessage: "Something failed... refresh and try again",
     })
   }
+}
 
-  return data
-})
-
-const { data: tasks } = await useAsyncData("tasks", async () => {
-  const { data, error } = await supabase
-    .from("tasks")
-    .select()
-    .eq("project_id", id.value)
-
-  if (error) {
-    throw createError({
-      fatal: true,
-      statusCode: 500,
-      statusMessage: "Something went wrong, refresh and try again",
-    })
-  }
-
-  return data
-})
+const { project, tasks } = await getData()
 
 const tasksCompletedPercentage = computed(() => {
-  const totalTasks = tasks.value?.length
-  const totalCompleteTasks = tasks.value?.filter(
+  const totalTasks = tasks?.data?.length
+  const totalCompleteTasks = tasks?.data?.filter(
     (t) => t.status == "completed"
   ).length
 
@@ -56,10 +46,10 @@ const tasksCompletedPercentage = computed(() => {
 
 const tasksCount = computed(() => {
   const rels: any = {
-    total: tasks.value?.length,
+    total: tasks.data?.length,
   }
 
-  tasks.value?.forEach((task) => {
+  tasks.data?.forEach((task) => {
     if (!rels[task.status]) {
       rels[task.status] = 0
     }
@@ -69,6 +59,13 @@ const tasksCount = computed(() => {
 
   return rels
 })
+
+const selectedTask = ref()
+
+function handleSelectTask(task: Task) {
+  isTaskModalOpen.value = true
+  selectedTask.value = task
+}
 </script>
 
 <template>
@@ -76,19 +73,19 @@ const tasksCount = computed(() => {
     <!-- infos do projeto -->
     <div class="grid gap-4 lg:grid-cols-2">
       <section class="space-y-4">
-        <h1 class="font-bold text-2xl">{{ project?.title }}</h1>
-        <p class="text-slate-600">{{ project?.description }}</p>
+        <h1 class="font-bold text-2xl">{{ project?.data?.title }}</h1>
+        <p class="text-slate-600">{{ project?.data?.description }}</p>
 
         <div class="flex flex-wrap gap-2">
           <UBadge
             color="blue"
-            v-for="category in project?.categories"
+            v-for="category in project?.data?.categories"
             :key="category"
             >{{ category }}</UBadge
           >
         </div>
 
-        <UBadge variant="soft">Due Date: {{ project?.due_date }}</UBadge>
+        <UBadge variant="soft">Due Date: {{ project?.data?.due_date }}</UBadge>
 
         <UMeter
           :value="tasksCompletedPercentage"
@@ -123,18 +120,22 @@ const tasksCount = computed(() => {
 
     <!-- Listagem das tarefas -->
     <section class="mt-4">
-      <div v-if="tasks && tasks.length > 0">
+      <div v-if="tasks.data && tasks?.data?.length > 0">
         <div class="grid gap-4">
           <TaskPreviewCard
-            v-for="task in tasks"
+            v-for="task in tasks.data"
             :task="task"
-            @openDetails="isTaskModalOpen = true"
+            @openDetails="handleSelectTask(task)"
           />
         </div>
       </div>
     </section>
 
     <!-- Task Details -->
-    <TaskDetailsModal v-model="isTaskModalOpen" />
+    <TaskDetailsModal
+      v-if="isTaskModalOpen"
+      v-model="isTaskModalOpen"
+      :task="selectedTask"
+    />
   </div>
 </template>
