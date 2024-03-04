@@ -1,5 +1,10 @@
 <script setup lang="ts">
-const props = defineProps(["modelValue"])
+import type { Task } from "~/types"
+
+const props = defineProps<{
+  modelValue: boolean
+  task: Task
+}>()
 const emits = defineEmits(["update:modelValue"])
 
 const isTaskModalOpen = computed({
