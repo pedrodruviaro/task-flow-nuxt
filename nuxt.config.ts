@@ -1,7 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@nuxt/ui", "@nuxtjs/google-fonts", "@nuxtjs/supabase"],
+  modules: [
+    "@nuxt/ui",
+    "@nuxtjs/google-fonts",
+    "@nuxtjs/supabase",
+    "@nuxt/image",
+  ],
 
   colorMode: {
     preference: "light",
@@ -10,6 +15,12 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       Inter: [400, 600, 700],
+    },
+  },
+
+  supabase: {
+    redirectOptions: {
+      exclude: ["/"],
     },
   },
 })
