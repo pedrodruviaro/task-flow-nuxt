@@ -23,4 +23,8 @@ export default defineNuxtConfig({
       exclude: ["/"],
     },
   },
+
+  image: {
+    domains: ["https://taskflow.pedroruviaro.com.br/"],
+  },
 })
