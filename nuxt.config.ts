@@ -25,6 +25,6 @@ export default defineNuxtConfig({
   },
 
   image: {
-    domains: ["https://taskflow.pedroruviaro.com.br/"],
+    provider: "ipx",
   },
 })
