@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { TASK_STATUS, type TaskStatus } from "~/constants/tasks/status"
-import {
-  TASK_PRIORITIES,
-  type TaskPriorities,
-} from "~/constants/tasks/priorities"
+import { TASK_STATUS } from "~/constants/tasks/status"
+import { TASK_PRIORITIES } from "~/constants/tasks/priorities"
+import type { TaskPriorities, TaskStatus } from "~/types"
 
 interface Props {
   task: any
@@ -14,7 +12,6 @@ interface Emits {
 }
 
 const props = defineProps<Props>()
-
 const emits = defineEmits<Emits>()
 
 function openDetailsModal() {

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { z } from "zod"
-import type { FormSubmitEvent } from "#ui/types"
 import { getProjectsStatusLabels } from "@/utils/projects/status"
+import type { Database } from "~/supabase"
+import type { FormSubmitEvent } from "#ui/types"
 
 const categories = ["Website", "Android", "iOS"]
 
@@ -29,9 +30,9 @@ const state = reactive({
 
 // submit
 const isLoading = ref(false)
-const supabase = useSupabaseClient()
+const supabase = useSupabaseClient<Database>()
 const user = useSupabaseUser()
-const toast = useToast()
+const { notify } = useNotifications()
 const router = useRouter()
 
 async function handleSubmit(event: FormSubmitEvent<Schema>) {
@@ -56,13 +57,9 @@ async function handleSubmit(event: FormSubmitEvent<Schema>) {
       throw new Error("Failed to create the project")
     }
 
-    toast.add({
-      title: "Project created!",
-      color: "green",
-      icon: "i-heroicons-check",
-    })
+    notify({ title: "Project added", type: "success" })
 
-    if (data && data[0].id) {
+    if (data.length > 0) {
       router.push(`/dashboard/projects/${data[0].id}`)
     } else {
       router.push(`/dashboard/projects`)
@@ -74,11 +71,7 @@ async function handleSubmit(event: FormSubmitEvent<Schema>) {
     state.categories = []
     state.status = undefined
   } catch (error) {
-    toast.add({
-      title: "Failed to create the project",
-      color: "red",
-      icon: "i-heroicons-x-circle",
-    })
+    notify({ title: "Failed to create the project", type: "error" })
   } finally {
     isLoading.value = false
   }
