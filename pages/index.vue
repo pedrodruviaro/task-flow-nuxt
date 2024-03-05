@@ -38,7 +38,7 @@ useSeoMeta({
         >
       </div>
       <div>
-        <NuxtImg
+        <img
           src="/lp/hero-img.png"
           alt="Dashboard Image"
           width="646"

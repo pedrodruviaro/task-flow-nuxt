@@ -1,12 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: [
-    "@nuxt/ui",
-    "@nuxtjs/google-fonts",
-    "@nuxtjs/supabase",
-    "@nuxt/image",
-  ],
+  modules: ["@nuxt/ui", "@nuxtjs/google-fonts", "@nuxtjs/supabase"],
 
   colorMode: {
     preference: "light",
@@ -22,9 +17,5 @@ export default defineNuxtConfig({
     redirectOptions: {
       exclude: ["/"],
     },
-  },
-
-  image: {
-    provider: "ipx",
   },
 })
