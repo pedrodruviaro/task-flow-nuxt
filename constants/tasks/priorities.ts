@@ -1,4 +1,4 @@
-export type TaskPriorities = "low" | "mid" | "high"
+import type { TaskPriorities } from "~/types"
 
 export const TASK_PRIORITIES: Record<
   TaskPriorities,

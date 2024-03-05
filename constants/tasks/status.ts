@@ -1,4 +1,4 @@
-export type TaskStatus = "completed" | "on_review" | "in_progress"
+import type { TaskStatus } from "~/types"
 
 export const TASK_STATUS: Record<TaskStatus, { color: string; label: string }> =
   {
