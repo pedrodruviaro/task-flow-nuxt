@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { STATUS } from "@/constants/projects/status"
-
-const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+import type { Project } from "~/types"
 
 const activeFilter = ref("All Projects")
-const projects = ref([])
+const projects = ref<Project[]>([])
 const projectsByStatus = computed(() => {
   let projectsRelate: any = {}
 
@@ -24,11 +22,14 @@ const projectsByStatus = computed(() => {
   return projectsRelate
 })
 
-const { data, pending } = await useAsyncData("projects", async () => {
+const supabase = useSupabaseClient()
+const user = useSupabaseUser()
+
+const { data, error } = await useAsyncData("projects", async () => {
   const response = await supabase
     .from("projects")
     .select()
-    .eq("created_by", user?.value?.id)
+    .eq("created_by", user?.value?.id || "")
     .order("due_date", { ascending: true })
 
   if (response.data) {
@@ -49,7 +50,6 @@ if (data.value) {
 
 <template>
   <section>
-    <p v-if="pending">Loading...</p>
     <div class="flex items-center gap-2 mb-4 flex-wrap">
       <UButton
         :variant="activeFilter === 'All Projects' ? 'outline' : 'ghost'"
