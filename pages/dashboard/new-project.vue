@@ -28,25 +28,29 @@ const state = reactive({
 })
 
 // submit
+const isLoading = ref(false)
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const toast = useToast()
-const isLoading = ref(false)
+const router = useRouter()
 
 async function handleSubmit(event: FormSubmitEvent<Schema>) {
   try {
     isLoading.value = true
 
-    const newProject = {
+    const newProject: any = {
       title: event.data.title,
       description: event.data.description,
-      due_date: new Date(event.data.due_date).toISOString(),
+      due_date: event.data.due_date,
       status: event.data.status,
       categories: event.data.categories,
-      created_by: user?.value?.id,
+      created_by: user?.value?.id as string,
     }
 
-    const { error } = await supabase.from("projects").insert(newProject)
+    const { error, data } = await supabase
+      .from("projects")
+      .insert(newProject)
+      .select()
 
     if (error) {
       throw new Error("Failed to create the project")
@@ -58,6 +62,12 @@ async function handleSubmit(event: FormSubmitEvent<Schema>) {
       icon: "i-heroicons-check",
     })
 
+    if (data && data[0].id) {
+      router.push(`/dashboard/projects/${data[0].id}`)
+    } else {
+      router.push(`/dashboard/projects`)
+    }
+
     state.title = undefined
     state.description = undefined
     state.due_date = undefined
@@ -65,8 +75,7 @@ async function handleSubmit(event: FormSubmitEvent<Schema>) {
     state.status = undefined
   } catch (error) {
     toast.add({
-      title: "Something went wrong...",
-      description: "Refresh the page and try again",
+      title: "Failed to create the project",
       color: "red",
       icon: "i-heroicons-x-circle",
     })
