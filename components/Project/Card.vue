@@ -39,9 +39,7 @@ const projectLink = computed(() => {
 
       <template #footer>
         <div class="flex justify-end">
-          <UBadge variant="soft"
-            ><strong class="pr-1">Due Date: </strong>{{ date }}</UBadge
-          >
+          <ProjectDueDate :dueDate="date" />
         </div>
       </template>
     </UCard>
