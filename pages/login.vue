@@ -10,17 +10,14 @@ const user = useSupabaseUser()
 const router = useRouter()
 
 if (user?.value?.id) {
-  router.push("/dashboard")
+  // router.push("/dashboard")
 }
-
-const REDIRECT_URL = "http://localhost:3000/dashboard"
 
 async function handleLogin() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
 
     options: {
-      redirectTo: REDIRECT_URL + "/confirm",
       queryParams: {
         access_type: "offline",
         prompt: "consent",
@@ -28,10 +25,15 @@ async function handleLogin() {
     },
   })
 }
+
+async function logout() {
+  await supabase.auth.signOut()
+}
 </script>
 
 <template>
   <section>
+    <button @click="logout">logout</button>
     <div class="flex flex-col justify-center text-center">
       <div class="flex items-center gap-4 mx-auto mb-6">
         <img src="/logo.svg" width="60" height="60" />
