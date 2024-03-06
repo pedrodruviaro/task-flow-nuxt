@@ -9,6 +9,8 @@ const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const router = useRouter()
 
+const REDIRECT_URL = useRuntimeConfig().public.baseUrl
+
 if (user?.value?.id) {
   // router.push("/dashboard")
 }
@@ -18,6 +20,7 @@ async function handleLogin() {
     provider: "google",
 
     options: {
+      redirectTo: `${REDIRECT_URL}/confirm`,
       queryParams: {
         access_type: "offline",
         prompt: "consent",

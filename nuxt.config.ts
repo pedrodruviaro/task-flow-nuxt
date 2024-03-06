@@ -18,4 +18,10 @@ export default defineNuxtConfig({
       exclude: ["/"],
     },
   },
+
+  runtimeConfig: {
+    public: {
+      baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
+    },
+  },
 })
