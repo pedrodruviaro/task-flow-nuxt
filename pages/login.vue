@@ -8,11 +8,11 @@ definePageMeta({
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const router = useRouter()
-
+const { notify } = useNotifications()
 const REDIRECT_URL = useRuntimeConfig().public.baseUrl
 
 if (user?.value?.id) {
-  // router.push("/dashboard")
+  router.push("/dashboard")
 }
 
 async function handleLogin() {
@@ -27,16 +27,15 @@ async function handleLogin() {
       },
     },
   })
-}
 
-async function logout() {
-  await supabase.auth.signOut()
+  if (error) {
+    notify({ title: "Failed to authenticate", type: "error" })
+  }
 }
 </script>
 
 <template>
   <section>
-    <button @click="logout">logout</button>
     <div class="flex flex-col justify-center text-center">
       <div class="flex items-center gap-4 mx-auto mb-6">
         <img src="/logo.svg" width="60" height="60" />
